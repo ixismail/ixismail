@@ -7,6 +7,9 @@
 
 <a id="readme-top"></a>
 
+<!-- Wave banners, rolling (scripts/readme_assets.py). -->
+<img src="assets/wave-top.svg" width="100%" alt="">
+
 <p align="center">
   <a href="https://themuhammadismail.com/?utm_source=github&amp;utm_medium=profile&amp;utm_content=portrait">
     <picture>
@@ -87,3 +90,5 @@
     </picture>
   </a>
 </p>
+
+<img src="assets/wave-bottom.svg" width="100%" alt="">

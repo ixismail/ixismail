@@ -65,18 +65,29 @@ def name_svg(name_color: str, sub_color: str, link_color: str) -> str:
 
 
 def thanks_svg(color: str) -> str:
-    """The sign-off in Pacifico outlines (scripts/lettering.py), written in left to right: a mask
-    with a soft leading edge slides across, as if the ink were going down."""
+    """The sign-off in Pacifico outlines (scripts/lettering.py), on a loop: written in left to
+    right, held, then lifted away left to right, and written again. A mask with soft edges on
+    both sides slides across: as it enters, the ink goes down; as it leaves, the ink lifts."""
     w, h, width = 420, 90, 340  # the lettering spans `width` px, centred
     k = width / (lettering.MAX_X - lettering.MIN_X)
     tx = (w - width) / 2 - lettering.MIN_X * k
     ty = (h - (lettering.MAX_Y - lettering.MIN_Y) * k) / 2 + lettering.MAX_Y * k
-    edge = 40  # the soft edge's width, px
-    span = w + edge
+    edge = 40  # each soft edge's width, px
+    span = w + 2 * edge  # the mask: a soft edge, the full width, a soft edge
+    hidden_before, shown, hidden_after = -span, -edge, w
+    # One 5.2 s cycle: a beat of nothing (0.3 s), write (2.1 s), hold (1.5 s), lift (1 s), a beat
+    # of nothing (0.3 s).
+    # The cycle starts and ends hidden, so the loop's restart never shows. The attribute holds the
+    # written frame, which is what a renderer without SMIL shows.
+    timeline = (
+        f'<animate attributeName="x" values="{hidden_before};{hidden_before};{shown};{shown};{hidden_after};{hidden_after}" '
+        'keyTimes="0;.0577;.4615;.75;.9423;1" calcMode="spline" '
+        'keySplines="0 0 1 1;.45 0 .25 1;0 0 1 1;.55 0 .75 1;0 0 1 1" dur="5.2s" repeatCount="indefinite"/>'
+    )
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" role="img" aria-label="{lettering.TEXT}">
 <defs>
-<linearGradient id="edge" x1="0" x2="1"><stop offset="0" stop-color="#fff"/><stop offset="{w / span:.4f}" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
-<mask id="ink" maskUnits="userSpaceOnUse" x="0" y="0" width="{w}" height="{h}"><rect x="0" y="0" width="{span}" height="{h}" fill="url(#edge)"><animate attributeName="x" values="{-span};{-span};0" keyTimes="0;.12;1" calcMode="spline" keySplines="0 0 1 1;.45 0 .25 1" dur="2s" fill="freeze"/></rect></mask>
+<linearGradient id="edge" x1="0" x2="1"><stop offset="0" stop-color="#000"/><stop offset="{edge / span:.4f}" stop-color="#fff"/><stop offset="{(edge + w) / span:.4f}" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
+<mask id="ink" maskUnits="userSpaceOnUse" x="0" y="0" width="{w}" height="{h}"><rect x="{shown}" y="0" width="{span}" height="{h}" fill="url(#edge)">{timeline}</rect></mask>
 </defs>
 <g mask="url(#ink)"><path transform="translate({tx:.2f} {ty:.2f}) scale({k:.6f} {-k:.6f})" fill="{color}" d="{lettering.PATH}"/></g>
 </svg>
@@ -90,6 +101,58 @@ def top_svg(color: str) -> str:
 <rect x=".5" y=".5" width="{w - 1}" height="{h - 1}" rx="{(h - 1) / 2}" fill="{color}" fill-opacity=".06" stroke="{color}" stroke-opacity=".5"/>
 <g transform="translate(24 18)"><path d="M0 6V-6M-4.5-1.5L0-6L4.5-1.5" fill="none" stroke="{color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><animateTransform attributeName="transform" type="translate" values="0 0;0 -2.5;0 0;0 0" keyTimes="0;.2;.4;1" dur="2.4s" repeatCount="indefinite"/></path></g>
 <text x="40" y="22.5" textLength="76" lengthAdjust="spacingAndGlyphs" font-family="{SANS}" font-size="13" font-weight="600" fill="{color}">Back to top</text>
+</svg>
+'''
+
+
+# ---- The wave banners (the very top and the very bottom) ---------------------------------------
+
+WAVE_W, WAVE_H = 1200, 120
+WAVE_GREEN, WAVE_BLUE = "#5fb06f", "#0a87ba"
+# Each layer: (mid-line y, amplitude, phase, seconds per wave-length, opacity, direction).
+WAVE_LAYERS = (
+    (54, 22, 0.0, 16, 0.5, 1),    # the back wave: higher, slower, see-through
+    (82, 13, 0.5, 10, 0.92, -1),  # the front wave: lower, quicker, the other way
+)
+
+
+def wave_path(mid: float, amp: float, phase: float, direction: int) -> str:
+    """Two wave-lengths of a sine (one per banner width), filled down to the bottom edge, lying on
+    the side the layer comes from (left of the banner when it rolls right, right when it rolls
+    left), so the banner stays covered the whole way. Moved by exactly one wave-length per loop,
+    the start and end frames are identical."""
+    import math
+
+    step = 25
+    start = -WAVE_W if direction > 0 else 0
+    points = [
+        f"{x} {mid + amp * math.sin(2 * math.pi * (x / WAVE_W + phase)):.1f}"
+        for x in range(start, start + 2 * WAVE_W + 1, step)
+    ]
+    return f"M{points[0]}L{'L'.join(points[1:])}V{WAVE_H}H{start}Z"
+
+
+def wave_svg(edge: str) -> str:
+    """The banner: a green-to-blue gradient that stays put, shown through two wave-shaped masks
+    rolling past each other. `bottom` rises from the bottom edge; `top` is its mirror image,
+    hanging from the top edge."""
+    flip = f' transform="translate(0 {WAVE_H}) scale(1 -1)"' if edge == "top" else ""
+    masks, layers = [], []
+    for i, (mid, amp, phase, seconds, opacity, direction) in enumerate(WAVE_LAYERS):
+        travel = WAVE_W * direction
+        masks.append(
+            f'<mask id="wave{i}" maskUnits="userSpaceOnUse" x="0" y="0" width="{WAVE_W}" height="{WAVE_H}">'
+            f'<path fill="#fff" d="{wave_path(mid, amp, phase, direction)}">'
+            f'<animateTransform attributeName="transform" type="translate" values="0 0;{travel} 0" '
+            f'dur="{seconds}s" repeatCount="indefinite"/></path></mask>'
+        )
+        layers.append(f'<rect width="{WAVE_W}" height="{WAVE_H}" fill="url(#sea)" mask="url(#wave{i})" opacity="{opacity}"/>')
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WAVE_W} {WAVE_H}" width="{WAVE_W}" height="{WAVE_H}" preserveAspectRatio="none" role="img" aria-label="">
+<defs>
+<linearGradient id="sea" x1="0" x2="1"><stop offset="0" stop-color="{WAVE_GREEN}"/><stop offset="1" stop-color="{WAVE_BLUE}"/></linearGradient>
+{"".join(masks)}
+</defs>
+<g{flip}>{"".join(layers)}</g>
 </svg>
 '''
 
@@ -232,6 +295,9 @@ if __name__ == "__main__":
         "thanks-light.svg": thanks_svg("#0969da"),
         "top-dark.svg": top_svg("#58a6ff"),
         "top-light.svg": top_svg("#0969da"),
+        # The wave banners at the very top and the very bottom.
+        "wave-top.svg": wave_svg("top"),
+        "wave-bottom.svg": wave_svg("bottom"),
         # The closing call to action, as on the portfolio.
         "cta-dark.svg": cta_svg("dark"),
         "cta-light.svg": cta_svg("light"),
