@@ -1,0 +1,42 @@
+# Keeps the README's generated images current. Today: the GitHub contributions card
+# (scripts/contributions.py → assets/contributions-{light,dark}.svg), redrawn every day and
+# committed only when it changed.
+name: Update profile
+
+on:
+  schedule:
+    - cron: "17 3 * * *" # daily, 03:17 UTC (off the hour: scheduled runs queue less)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-profile
+  cancel-in-progress: false
+
+jobs:
+  contributions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Draw the contributions card
+        env:
+          # A fine-grained token with no extra permissions is enough to read a public calendar;
+          # the workflow's own token is the fallback.
+          GH_TOKEN: ${{ secrets.GH_CONTRIBUTIONS_TOKEN || github.token }}
+        run: python3 scripts/contributions.py
+
+      - name: Commit if it changed
+        run: |
+          git add assets/contributions-light.svg assets/contributions-dark.svg
+          if git diff --cached --quiet; then
+            echo "No change."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh contributions card"
+          git push
