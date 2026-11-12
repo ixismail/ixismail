@@ -50,7 +50,54 @@
   </a>
 </p>
 
-<h2 align="center"><code>~/</code> toolbox</h2>
+<!-- The last 12 months, this week and the languages, from GitHub; redrawn daily (scripts/github_cards.py). -->
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/activity-dark.svg">
+    <img src="assets/activity-light.svg" width="820" alt="My GitHub activity: the active days, longest streak, busiest month and public repos started over the last 12 months; commits per day this week; and the languages across my public repositories.">
+  </picture>
+</p>
+
+<h2 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/header-projects-dark.svg">
+    <img src="assets/header-projects-light.svg" alt="~/projects">
+  </picture>
+</h2>
+
+<!-- The repos pinned on this profile, one card each; this block is rewritten daily by
+     scripts/github_cards.py (pin or unpin on GitHub to change it). -->
+<!-- pinned:start -->
+<p align="center">
+  <a href="https://github.com/ixismail/redis">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/repo-1-dark.svg">
+      <img src="assets/repo-1-light.svg" width="410" alt="redis: Benchmark comparing MongoDB direct queries vs Redis caching layer performance using Node.js, Express, and Autocannon">
+    </picture>
+  </a>
+  <a href="https://github.com/ixismail/hushdoom">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/repo-2-dark.svg">
+      <img src="assets/repo-2-light.svg" width="410" alt="hushdoom: Hushdoom - Feed Blocker:  Chrome Extension that block feeds on 13+ social platforms including YouTube, Instagram, X, TikTok, Reddit, and more. Replace them with custom motivational quotes, snooze blocking on demand, and regain your focus. Privacy-first: all settings stored locally in your browser, zero external data collection.">
+    </picture>
+  </a>
+</p>
+<p align="center">
+  <a href="https://github.com/ixismail/nukeport">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/repo-3-dark.svg">
+      <img src="assets/repo-3-light.svg" width="410" alt="nukeport: A cross-platform CLI tool built purely in Go to instantly identify and gracefully terminate processes causing EADDRINUSE errors on Windows, Mac, and Linux.">
+    </picture>
+  </a>
+</p>
+<!-- pinned:end -->
+
+<h2 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/header-toolbox-dark.svg">
+    <img src="assets/header-toolbox-light.svg" alt="~/toolbox">
+  </picture>
+</h2>
 
 <!-- 3 rows: languages · frontend + backend · data, infra + tools -->
 <p align="center">
@@ -58,6 +105,38 @@
     <source media="(prefers-color-scheme: light)" srcset="https://skillicons.dev/icons?i=go,ts,js,php,cpp,bash,html,css,react,nextjs,tailwind,nodejs,nestjs,express,deno,supabase,postgres,mysql,mongodb,redis,docker,githubactions,cloudflare,vercel,linux,git,github&amp;perline=9&amp;theme=light">
     <img src="https://skillicons.dev/icons?i=go,ts,js,php,cpp,bash,html,css,react,nextjs,tailwind,nodejs,nestjs,express,deno,supabase,postgres,mysql,mongodb,redis,docker,githubactions,cloudflare,vercel,linux,git,github&amp;perline=9&amp;theme=dark" alt="Go, TypeScript, JavaScript, PHP, C++, Bash, HTML, CSS, React, Next.js, Tailwind CSS, Node.js, NestJS, Express, Deno, Supabase, PostgreSQL, MySQL, MongoDB, Redis, Docker, GitHub Actions, Cloudflare, Vercel, Linux, Git, GitHub">
   </picture>
+</p>
+
+<!-- From my bucket list and my homepage (scripts/extras.py). -->
+<p align="center">
+  <a href="https://themuhammadismail.com/bucket-list?utm_source=github&amp;utm_medium=profile&amp;utm_content=achievements">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/achievements-dark.svg">
+      <img src="assets/achievements-light.svg" width="840" alt="Achievements unlocked from my bucket list: portfolio shipped, internship landed, mentored a junior dev, two self-help books read, never vaped or smoked.">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://themuhammadismail.com/contact?utm_source=github&amp;utm_medium=profile&amp;utm_content=ask-me">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/notes-dark.svg">
+      <img src="assets/notes-light.svg" width="840" alt="Ask me about: Go and Postgres performance, Chrome extensions, CLI tools in Go, caching with Redis.">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/clock-dark.svg">
+    <img src="assets/clock-light.svg" width="410" alt="When I commit: my public commits by hour of the day.">
+  </picture>
+  <a href="https://themuhammadismail.com/?utm_source=github&amp;utm_medium=profile&amp;utm_content=hero">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/hero-dark.svg">
+      <img src="assets/hero-light.svg" width="410" alt="The 3D desk from my homepage, rendered live in three.js.">
+    </picture>
+  </a>
 </p>
 
 <br>

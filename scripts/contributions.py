@@ -19,14 +19,13 @@ for 2D). The scheduled workflow (.github/workflows/update-profile.yml) runs it e
 from __future__ import annotations
 
 import argparse
-import http.client
 import json
 import os
 import sys
-import time
-import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
+
+import github_api
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
 LOGIN = "ixismail"
@@ -104,25 +103,8 @@ THEMES = {
 
 
 def fetch(token: str) -> dict:
-    request = urllib.request.Request(
-        "https://api.github.com/graphql",
-        data=json.dumps({"query": QUERY, "variables": {"login": LOGIN}}).encode(),
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "User-Agent": f"{LOGIN}-profile-readme",
-        },
-    )
-    # GitHub's API drops a connection now and then: three tries, a short pause between them.
-    for attempt in range(3):
-        try:
-            with urllib.request.urlopen(request, timeout=20) as response:
-                return json.load(response)
-        except (OSError, http.client.HTTPException) as error:
-            if attempt == 2:
-                raise SystemExit(f"Couldn't reach GitHub: {error}") from error
-            time.sleep(2 * (attempt + 1))
-    raise AssertionError("unreachable")
+    """The calendar, in the GraphQL response's shape (what --fixture files hold too)."""
+    return {"data": github_api.graphql(token, QUERY, {"login": LOGIN})}
 
 
 def calendar_of(response: dict) -> dict:
