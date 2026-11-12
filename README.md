@@ -1,25 +1,17 @@
-<!--
-  Every link to the portfolio carries utm_content=<spot>, so your site analytics
-  can show which part of this README people click from.
-  Images are generated: scripts/halftone.py (portrait), scripts/contributions.py (the
-  contributions card, redrawn daily by the workflow) and scripts/readme_assets.py (the rest).
--->
+<!-- Images in assets/ are generated: python -m profilegen all. Links carry utm_content=<spot>. -->
 
 <a id="readme-top"></a>
 
-<!-- Wave banners, rolling (scripts/readme_assets.py). -->
 <img src="assets/wave-top.svg" width="100%" alt="">
 
 <p align="center">
   <a href="https://themuhammadismail.com/?utm_source=github&amp;utm_medium=profile&amp;utm_content=portrait">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="assets/portrait-halftone.svg">
-      <img src="assets/portrait-halftone-card.svg" width="280" alt="Halftone portrait of Muhammad Ismail. Opens themuhammadismail.com">
+      <img src="assets/portrait-halftone-card.svg" width="224" alt="Halftone portrait of Muhammad Ismail. Opens themuhammadismail.com">
     </picture>
   </a>
-</p>
-
-<p align="center">
+  <br>
   <a href="https://themuhammadismail.com/?utm_source=github&amp;utm_medium=profile&amp;utm_content=name">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="assets/name-dark.svg">
@@ -40,17 +32,6 @@
   <img src="https://komarev.com/ghpvc/?username=ixismail&amp;label=profile%20views&amp;color=3fb950&amp;style=flat" alt="Profile views">
 </p>
 
-<!-- Redrawn daily by .github/workflows/update-profile.yml (scripts/contributions.py). -->
-<p align="center">
-  <a href="https://themuhammadismail.com/?utm_source=github&amp;utm_medium=profile&amp;utm_content=contributions#github-activity-heading">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/contributions-3d-dark.svg">
-      <img src="assets/contributions-3d-light.svg" width="820" alt="GitHub contributions over the last year, one 3D bar per day, with the current streak and best day. Opens themuhammadismail.com">
-    </picture>
-  </a>
-</p>
-
-<!-- The last 12 months, this week and the languages, from GitHub; redrawn daily (scripts/github_cards.py). -->
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/activity-dark.svg">
@@ -65,8 +46,7 @@
   </picture>
 </h2>
 
-<!-- The repos pinned on this profile, one card each; this block is rewritten daily by
-     scripts/github_cards.py (pin or unpin on GitHub to change it). -->
+<!-- Rewritten daily from the profile's pinned repos. -->
 <!-- pinned:start -->
 <p align="center">
   <a href="https://github.com/ixismail/redis">
@@ -99,7 +79,6 @@
   </picture>
 </h2>
 
-<!-- 3 rows: languages · frontend + backend · data, infra + tools -->
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: light)" srcset="https://skillicons.dev/icons?i=go,ts,js,php,cpp,bash,html,css,react,nextjs,tailwind,nodejs,nestjs,express,deno,supabase,postgres,mysql,mongodb,redis,docker,githubactions,cloudflare,vercel,linux,git,github&amp;perline=9&amp;theme=light">
@@ -107,7 +86,8 @@
   </picture>
 </p>
 
-<!-- From my bucket list and my homepage (scripts/extras.py). -->
+<br>
+
 <p align="center">
   <a href="https://themuhammadismail.com/bucket-list?utm_source=github&amp;utm_medium=profile&amp;utm_content=achievements">
     <picture>
@@ -139,9 +119,17 @@
   </a>
 </p>
 
+<p align="center">
+  <a href="https://themuhammadismail.com/?utm_source=github&amp;utm_medium=profile&amp;utm_content=contributions#github-activity-heading">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/contributions-3d-dark.svg">
+      <img src="assets/contributions-3d-light.svg" width="820" alt="GitHub contributions over the last year, one 3D bar per day, with the current streak and best day. Opens themuhammadismail.com">
+    </picture>
+  </a>
+</p>
+
 <br>
 
-<!-- The portfolio's closing call to action, drawn as one image (scripts/readme_assets.py). -->
 <p align="center">
   <a href="https://themuhammadismail.com/contact?utm_source=github&amp;utm_medium=profile&amp;utm_content=cta">
     <picture>
@@ -153,15 +141,24 @@
 
 <br>
 
-<!-- The sign-off writes itself in (Pacifico outlines: scripts/lettering.py). -->
+<p align="center">
+  Show some ❤️ by <a href="https://github.com/ixismail?tab=repositories">⭐ a repo</a>
+</p>
+
+<p align="center"><sub>— or —</sub></p>
+
+<p align="center">
+  <a href="https://buymeacoffee.com/ixismail"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="48" alt="Buy me a coffee"></a>
+</p>
+
+<br>
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/thanks-dark.svg">
     <img src="assets/thanks-light.svg" width="420" alt="Thanks For Visiting!">
   </picture>
-</p>
-
-<p align="center">
+  <br>
   <a href="#readme-top">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="assets/top-dark.svg">

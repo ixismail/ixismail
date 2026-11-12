@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+
+# python -m profilegen portrait-dots
+profilegen/art/portrait-dots.svg
+
+*.snapshot.json

@@ -1,14 +1,7 @@
-"""The README's sign-off, "Thanks For Visiting!", as outlines (no font file needed to show it).
-
-Lettered in Pacifico (Copyright 2018 The Pacifico Project Authors, SIL Open Font License 1.1,
-https://github.com/googlefonts/Pacifico), shaped with harfbuzz so the joins and spacing are the
-font's own, then each glyph's outline offset by its pen position into one path. Font units, y up
-(the drawing flips it). Generated data: change the words by re-shaping them, not by hand.
-"""
+""""Thanks For Visiting!" in Pacifico (c) 2018 The Pacifico Project Authors, OFL 1.1."""
 
 TEXT = "Thanks For Visiting!"
-UNITS_PER_EM = 1000
-# The path's bounds in font units: x from MIN_X to MAX_X, y from MIN_Y (descenders) to MAX_Y.
+# Path bounds, font units.
 MIN_X, MAX_X, MIN_Y, MAX_Y = 35, 8914, -455, 940
 PATH = (
     "M841 830Q872 824 888 809Q903 794 903 774Q903 741 885 726Q866 711 826 714Q736 721 686 724Q635"

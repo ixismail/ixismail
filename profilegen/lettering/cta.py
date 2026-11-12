@@ -1,18 +1,6 @@
-"""The closing call to action's words, as outlines (no font files needed to show them).
+"""The CTA's words. Instrument Serif (c) 2022 The Instrument Serif Project Authors; Outfit (c) 2021
+The Outfit Project Authors; both OFL 1.1. `advance` is each run's width in font units."""
 
-The portfolio's closing CTA (themuhammadismail.com), set in its own fonts and shaped with harfbuzz
-so spacing, kerning and joins are the fonts' own: each run's glyphs offset by their pen positions
-into one path. Font units, y up (the drawing flips them); `advance` is the run's width.
-
-  Instrument Serif, italic and upright: Copyright 2022 The Instrument Serif Project Authors
-  (https://github.com/Instrument/instrument-serif), SIL Open Font License 1.1.
-  Outfit (weights 600, 400): Copyright 2021 The Outfit Project Authors
-  (https://github.com/Outfitio/Outfit-Fonts), SIL Open Font License 1.1.
-
-Generated data: change the words by re-shaping them, not by hand.
-"""
-
-# Per font: units per em and the ascender/descender a browser centres a line box on.
 FONTS = {
     "serifItalic": {"upem": 1000, "ascender": 990, "descender": -310},
     "serif": {"upem": 1000, "ascender": 990, "descender": -310},

@@ -1,14 +1,7 @@
-"""The "Ask me about" notes' words, as outlines (the README shows them without a font file).
-
-Handwritten in Caveat, weight 600 (Copyright 2014 The Caveat Project Authors,
-https://github.com/googlefonts/caveat, SIL Open Font License 1.1), the guestbook's own hand on the
-portfolio; shaped with harfbuzz, each line one path. Font units, y up. Generated data: change the
-topics by re-shaping them, not by hand.
-"""
+"""The "Ask me about" topics in Caveat 600 (c) 2014 The Caveat Project Authors, OFL 1.1."""
 
 UNITS_PER_EM = 1000
 
-# One list per note, one entry per line.
 NOTES = [
     [
         {

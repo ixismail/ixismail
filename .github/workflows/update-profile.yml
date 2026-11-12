@@ -1,12 +1,9 @@
-# Keeps the README's live cards current, redrawn every day and committed only when they changed:
-#   - the contributions card (scripts/contributions.py → assets/contributions-3d-{light,dark}.svg);
-#   - the live GitHub cards (scripts/github_cards.py): the activity tiles, the pinned
-#     repos (and the README's pinned block) and the commit clock.
+# Redraws the GitHub-driven images daily and commits only if something changed.
 name: Update profile
 
 on:
   schedule:
-    - cron: "17 3 * * *" # daily, 03:17 UTC (off the hour: scheduled runs queue less)
+    - cron: "17 3 * * *" # off the hour: less queueing
   workflow_dispatch: {}
 
 permissions:
@@ -21,23 +18,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      # A fine-grained token with no extra permissions is enough to read public profile data;
-      # the workflow's own token is the fallback.
       GH_TOKEN: ${{ secrets.GH_CONTRIBUTIONS_TOKEN || github.token }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Draw the contributions card
-        run: python3 scripts/contributions.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      - name: Draw the activity tiles, the pinned repos and the clock
-        run: python3 scripts/github_cards.py
+      - name: Draw the live images
+        run: python -m profilegen live
 
       - name: Commit if anything changed
         run: |
-          # -A: a card for a repo that was unpinned is deleted, and that counts too.
-          git add -A -- assets/contributions-3d-light.svg assets/contributions-3d-dark.svg \
-            'assets/activity-*.svg' 'assets/clock-*.svg' 'assets/repo-*.svg' README.md
+          # -A also stages cards deleted for unpinned repos.
+          git add -A -- assets README.md
           if git diff --cached --quiet; then
             echo "No change."
             exit 0
