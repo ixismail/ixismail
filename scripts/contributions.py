@@ -1,24 +1,29 @@
 """Generate the README's GitHub contributions card, light and dark.
 
 The same card as the portfolio's GitHub activity section (themuhammadismail.com), drawn as a
-static SVG: the GitHub mark and login, the year's total, the 53 x 7 heatmap with its month and
-weekday labels, the current streak, the best day and the Less / More legend. The geometry,
-colours and maths are the portfolio's (`components/home/github-activity/geometry.ts`,
-`lib/github/calendar.ts`); only the interactive parts (tooltips, the 3D view) are left out.
+static SVG: the GitHub mark and login, the year's total, the year's contributions, the current
+streak, the best day and the Less / More legend. The README shows the 3D view (one bar per
+day); the flat 2D grid can be drawn too (`--view 2d`). The geometry, colours and maths are the
+portfolio's (`components/home/github-activity/geometry.ts`, `bars/geometry.ts`,
+`bars/palette.ts`, `lib/github/calendar.ts`); only the interactive parts (the switch, the
+tooltips) are left out: a README can't run scripts.
 
 Usage:
   GH_TOKEN=... python scripts/contributions.py            (fetches the last year from GitHub)
   python scripts/contributions.py --fixture calendar.json  (renders a saved GraphQL response)
+  python scripts/contributions.py --view 2d                (the flat grid instead)
 
-Stdlib only. Writes assets/contributions-light.svg and assets/contributions-dark.svg. The
-scheduled workflow (.github/workflows/update-profile.yml) runs it every day.
+Stdlib only. Writes assets/contributions-3d-{light,dark}.svg (or contributions-{light,dark}.svg
+for 2D). The scheduled workflow (.github/workflows/update-profile.yml) runs it every day.
 """
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import os
 import sys
+import time
 import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
@@ -108,8 +113,16 @@ def fetch(token: str) -> dict:
             "User-Agent": f"{LOGIN}-profile-readme",
         },
     )
-    with urllib.request.urlopen(request, timeout=20) as response:
-        return json.load(response)
+    # GitHub's API drops a connection now and then: three tries, a short pause between them.
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(request, timeout=20) as response:
+                return json.load(response)
+        except (OSError, http.client.HTTPException) as error:
+            if attempt == 2:
+                raise SystemExit(f"Couldn't reach GitHub: {error}") from error
+            time.sleep(2 * (attempt + 1))
+    raise AssertionError("unreachable")
 
 
 def calendar_of(response: dict) -> dict:
@@ -134,6 +147,7 @@ def calendar_of(response: dict) -> dict:
     weeks = -(-(first_weekday + len(days)) // ROWS)
     return {
         "total": raw["totalContributions"],
+        "counts": counts,
         "first_weekday": first_weekday,
         "levels": [LEVELS.index(day["contributionLevel"]) for day in days],
         "weeks": weeks,
@@ -162,6 +176,114 @@ def month_labels(first: date, first_weekday: int, count: int, weeks: int) -> lis
     ]
 
 
+# ---- The 3D view (bars/geometry.ts, bars/palette.ts) -------------------------------------------
+
+# GitHub's green ramp, opaque (translucent tops would let back bars show through front ones);
+# the front face mixed with 18 % black, the side with 36 %.
+BARS = {
+    "light": {
+        "top": ["#e5e7eb", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
+        "front": ["#bcbdc1", "#7fbf8a", "#34a151", "#278440", "#1b5a2f"],
+        "side": ["#939496", "#63956c", "#297d3f", "#1f6732", "#154624"],
+        "month": "rgba(0,0,0,0.6)",
+    },
+    "dark": {
+        "top": ["#262626", "#0e4429", "#006d32", "#26a641", "#39d353"],
+        "front": ["#1f1f1f", "#0b3822", "#005929", "#1f8835", "#2fad44"],
+        "side": ["#181818", "#092c1a", "#004620", "#186a2a", "#248735"],
+        "month": "rgba(255,255,255,0.55)",
+    },
+}
+# A weekday is 5 px right and 5.4 px up; a week 1.9 px down and as wide as makes the drawing
+# exactly as wide as the flat grid.
+DAY_X, DAY_Y, WEEK_Y = 5, -5.4, 1.9
+FOOTPRINT, BARS_PADDING, LABEL_BAND, LABEL_OFFSET = 0.72, 8, 16, 14
+MAX_HEIGHT, MIN_HEIGHT, EMPTY_HEIGHT = 100, 4, 2
+OUTLIER_RATIO, KNEE_HEIGHT = 2.5, 82
+
+
+def height_scale(counts: list[int]):
+    """Linear in 4–100 px, unless one outlier would flatten the year (the busiest day above
+    2.5 × the 98th percentile): then up to that percentile in 4–82 px, the rest in 82–100."""
+    active = sorted(c for c in counts if c > 0)
+    if not active:
+        return lambda count: EMPTY_HEIGHT
+    top = active[-1]
+    p98 = active[min(len(active) - 1, int(len(active) * 0.98))]
+    guarded = p98 > 0 and top > OUTLIER_RATIO * p98
+
+    def scale(count: int) -> float:
+        if count <= 0:
+            return EMPTY_HEIGHT
+        c = min(count, top)
+        if not guarded:
+            return MIN_HEIGHT + (c / top) * (MAX_HEIGHT - MIN_HEIGHT)
+        if c <= p98:
+            return MIN_HEIGHT + (c / p98) * (KNEE_HEIGHT - MIN_HEIGHT)
+        return KNEE_HEIGHT + ((c - p98) / (top - p98)) * (MAX_HEIGHT - KNEE_HEIGHT)
+
+    return scale
+
+
+def bars_layout(cal: dict) -> dict:
+    """One box per day: weeks running down-right, weekdays stepping back up-right. Bars come in
+    the painter's order: week by week, back to front inside each (the nearer one is drawn last)."""
+    width = OFFSET_X + cal["weeks"] * PITCH - GAP
+    week_step = (width - BARS_PADDING * 2 - ROWS * DAY_X) / cal["weeks"]
+    scale = height_scale(cal["counts"])
+    heights = [scale(c) for c in cal["counts"]]
+
+    def raw(x: float, y: float, z: float) -> tuple[float, float]:
+        return x * week_step + y * DAY_X, x * WEEK_Y + y * DAY_Y - z
+
+    points = [raw(0, 0, 0), raw(cal["weeks"], 0, 0), raw(0, ROWS, 0), raw(cal["weeks"], ROWS, 0)]
+    inset = (1 - FOOTPRINT) / 2
+    for index, h in enumerate(heights):
+        slot = index + cal["first_weekday"]
+        y = ROWS - 1 - (slot % ROWS) + inset + FOOTPRINT  # the top's back edge
+        x = slot // ROWS + inset
+        points += [raw(x, y, h), raw(x + FOOTPRINT, y, h)]
+    min_x = min(p[0] for p in points)
+    min_y = min(p[1] for p in points)
+    max_y = max(p[1] for p in points)
+    dx, dy = BARS_PADDING - min_x, BARS_PADDING - min_y
+
+    def at(x: float, y: float, z: float) -> tuple[float, float]:
+        px, py = raw(x, y, z)
+        return round(px + dx, 1), round(py + dy, 1)
+
+    bars = []
+    for index, h in enumerate(heights):
+        slot = index + cal["first_weekday"]
+        week, y = slot // ROWS, ROWS - 1 - (slot % ROWS)
+        x0, y0 = week + inset, y + inset
+        x1, y1 = x0 + FOOTPRINT, y0 + FOOTPRINT
+        bars.append(
+            {
+                "level": cal["levels"][index],
+                # Drawn side, front, top: the top covers the others' shared edges.
+                "side": [at(x1, y0, 0), at(x1, y1, 0), at(x1, y1, h), at(x1, y0, h)],
+                "front": [at(x0, y0, 0), at(x1, y0, 0), at(x1, y0, h), at(x0, y0, h)],
+                "top": [at(x0, y0, h), at(x1, y0, h), at(x1, y1, h), at(x0, y1, h)],
+            }
+        )
+    # Slots run down each column (Sunday, the back row, first), so day order is already the
+    # painter's order inside a week, and weeks follow one another.
+    months = [
+        (label, at(week + 0.5, 0, 0)[0], round(at(week + 0.5, 0, 0)[1] + LABEL_OFFSET, 1))
+        for label, week in cal["month_labels"]
+    ]
+    return {
+        "bars": bars,
+        "months": months,
+        "height": int(-(-(max_y - min_y + BARS_PADDING * 2 + LABEL_BAND) // 1)),
+    }
+
+
+def quad(points: list[tuple[float, float]]) -> str:
+    return "M" + "L".join(f"{x:g} {y:g}" for x, y in points) + "Z"
+
+
 def current_streak(counts: list[int]) -> int:
     """Back from the last day; today still at zero isn't a break (the day isn't over)."""
     index = len(counts) - 1
@@ -181,18 +303,8 @@ def plural(n: int, word: str) -> str:
     return f"{n:,} {word}{'' if n == 1 else 's'}"
 
 
-def card_svg(cal: dict, theme: dict) -> str:
-    grid_w = OFFSET_X + cal["weeks"] * PITCH - GAP
-    width = PAD + grid_w + PAD
-    header_h = 44
-    grid_y = PAD + header_h + SPACE
-    footer_y = grid_y + GRID_HEIGHT + SPACE + 8
-    footer_h = 34
-    height = footer_y + footer_h + PAD
-    right = width - PAD
-    t = theme
-
-    # Cells grouped by level: each colour appears once.
+def grid_markup(cal: dict, t: dict, grid_y: int) -> str:
+    """The flat heatmap: month and weekday labels, cells grouped by level (each colour once)."""
     groups = []
     for level, (fill, stroke) in enumerate(t["levels"]):
         rects = []
@@ -205,7 +317,6 @@ def card_svg(cal: dict, theme: dict) -> str:
             rects.append(f'<rect x="{x}" y="{y}" width="{CELL}" height="{CELL}" rx="{RADIUS}"/>')
         if rects:
             groups.append(f'<g fill="{fill}" stroke="{stroke}">{"".join(rects)}</g>')
-
     months = "".join(
         f'<text x="{PAD + OFFSET_X + week * PITCH}" y="{grid_y + FONT}">{label}</text>'
         for label, week in cal["month_labels"]
@@ -215,6 +326,49 @@ def card_svg(cal: dict, theme: dict) -> str:
         for row, label in enumerate(DAY_LABELS)
         if label
     )
+    return (
+        f'<g font-size="{FONT}" font-weight="500" fill="{t["month_label"]}">{months}</g>'
+        f'<g font-size="{FONT}" font-weight="500" fill="{t["day_label"]}" text-anchor="end" dominant-baseline="middle">{days}</g>'
+        f'<g stroke-width="1">{"".join(groups)}</g>'
+    )
+
+
+def bars_markup(layout: dict, palette: dict, grid_y: int) -> str:
+    """The 3D bars, in the painter's order, with the month labels along the front edge."""
+    paths = "".join(
+        f'<path fill="{palette["side"][b["level"]]}" d="{quad(b["side"])}"/>'
+        f'<path fill="{palette["front"][b["level"]]}" d="{quad(b["front"])}"/>'
+        f'<path fill="{palette["top"][b["level"]]}" d="{quad(b["top"])}"/>'
+        for b in layout["bars"]
+    )
+    months = "".join(
+        f'<text x="{x:g}" y="{y:g}" text-anchor="middle">{label}</text>'
+        for label, x, y in layout["months"]
+    )
+    return (
+        f'<g transform="translate({PAD} {grid_y})">{paths}'
+        f'<g font-size="{FONT}" font-weight="500" fill="{palette["month"]}">{months}</g></g>'
+    )
+
+
+def card_svg(cal: dict, name: str, view: str) -> str:
+    """The card in one theme (`light` / `dark`) and one view (`2d` / `3d`)."""
+    t = THEMES[name]
+    grid_w = OFFSET_X + cal["weeks"] * PITCH - GAP
+    width = PAD + grid_w + PAD
+    header_h = 44
+    grid_y = PAD + header_h + SPACE
+    if view == "3d":
+        layout = bars_layout(cal)
+        graph, graph_h = bars_markup(layout, BARS[name], grid_y), layout["height"]
+        swatches = [(fill, "none") for fill in BARS[name]["top"]]
+    else:
+        graph, graph_h = grid_markup(cal, t, grid_y), GRID_HEIGHT
+        swatches = t["levels"]
+    footer_y = grid_y + graph_h + SPACE + 8
+    footer_h = 34
+    height = footer_y + footer_h + PAD
+    right = width - PAD
 
     def stat(x: int, icon: str, value: int, label: str) -> str:
         return (
@@ -234,7 +388,7 @@ def card_svg(cal: dict, theme: dict) -> str:
     legend = [
         f'<text x="{lx - 4}" y="{footer_y + 21}" text-anchor="end" font-size="10" font-weight="500" fill="{t["label"]}">Less</text>'
     ]
-    for level, (fill, stroke) in enumerate(t["levels"]):
+    for level, (fill, stroke) in enumerate(swatches):
         legend.append(
             f'<rect x="{lx + level * (CELL + 6) + 0.5}" y="{footer_y + 11.5}" width="{CELL - 1}" height="{CELL - 1}" rx="{RADIUS}" fill="{fill}" stroke="{stroke}"/>'
         )
@@ -253,9 +407,7 @@ def card_svg(cal: dict, theme: dict) -> str:
 <text x="{PAD + 34}" y="{PAD + 27}" font-size="14" font-weight="600" letter-spacing="-0.2" fill="{t["ink"]}">{LOGIN}</text>
 <text x="{right}" y="{PAD + 22}" text-anchor="end" font-size="24" font-weight="900" letter-spacing="-1.2" fill="{t["ink"]}">{cal["total"]:,}</text>
 <text x="{right}" y="{PAD + 40}" text-anchor="end" font-size="12" font-weight="500" fill="{t["label"]}">Contributions this year</text>
-<g font-size="{FONT}" font-weight="500" fill="{t["month_label"]}">{months}</g>
-<g font-size="{FONT}" font-weight="500" fill="{t["day_label"]}" text-anchor="end" dominant-baseline="middle">{days}</g>
-<g stroke-width="1">{"".join(groups)}</g>
+{graph}
 {stats}
 {"".join(legend)}
 </svg>
@@ -265,6 +417,9 @@ def card_svg(cal: dict, theme: dict) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--fixture", type=Path, help="a saved GraphQL response to render instead")
+    parser.add_argument(
+        "--view", choices=("3d", "2d"), default="3d", help="the 3D bars (the README's) or the flat grid"
+    )
     args = parser.parse_args()
 
     if args.fixture:
@@ -277,11 +432,12 @@ def main() -> None:
 
     cal = calendar_of(response)
     ASSETS.mkdir(exist_ok=True)
-    for name, theme in THEMES.items():
-        path = ASSETS / f"contributions-{name}.svg"
-        path.write_text(card_svg(cal, theme), encoding="utf-8", newline="\n")
+    suffix = "-3d" if args.view == "3d" else ""
+    for name in THEMES:
+        path = ASSETS / f"contributions{suffix}-{name}.svg"
+        path.write_text(card_svg(cal, name, args.view), encoding="utf-8", newline="\n")
         print(f"wrote {path.relative_to(ASSETS.parent)}")
-    print(f"{cal['total']:,} contributions · streak {cal['streak']} · best day {cal['best_day']}")
+    print(f"{cal['total']:,} contributions, streak {cal['streak']}, best day {cal['best_day']}")
 
 
 if __name__ == "__main__":

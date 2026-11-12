@@ -1,5 +1,5 @@
 # Keeps the README's generated images current. Today: the GitHub contributions card
-# (scripts/contributions.py → assets/contributions-{light,dark}.svg), redrawn every day and
+# (scripts/contributions.py → assets/contributions-3d-{light,dark}.svg), redrawn every day and
 # committed only when it changed.
 name: Update profile
 
@@ -31,7 +31,7 @@ jobs:
 
       - name: Commit if it changed
         run: |
-          git add assets/contributions-light.svg assets/contributions-dark.svg
+          git add assets/contributions-3d-light.svg assets/contributions-3d-dark.svg
           if git diff --cached --quiet; then
             echo "No change."
             exit 0

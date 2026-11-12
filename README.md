@@ -51,8 +51,8 @@
 <p align="center">
   <a href="https://themuhammadismail.com/?utm_source=github&amp;utm_medium=profile&amp;utm_content=contributions#github-activity-heading">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/contributions-dark.svg">
-      <img src="assets/contributions-light.svg" width="820" alt="GitHub contributions over the last year, as a heatmap with the current streak and best day. Opens themuhammadismail.com">
+      <source media="(prefers-color-scheme: dark)" srcset="assets/contributions-3d-dark.svg">
+      <img src="assets/contributions-3d-light.svg" width="820" alt="GitHub contributions over the last year, one 3D bar per day, with the current streak and best day. Opens themuhammadismail.com">
     </picture>
   </a>
 </p>
