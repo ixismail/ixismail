@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 134 36" width="134" height="36" role="img" aria-label="Back to top">
+<rect x=".5" y=".5" width="133" height="35" rx="17.5" fill="#58a6ff" fill-opacity=".06" stroke="#58a6ff" stroke-opacity=".5"/>
+<g transform="translate(24 18)"><path d="M0 6V-6M-4.5-1.5L0-6L4.5-1.5" fill="none" stroke="#58a6ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><animateTransform attributeName="transform" type="translate" values="0 0;0 -2.5;0 0;0 0" keyTimes="0;.2;.4;1" dur="2.4s" repeatCount="indefinite"/></path></g>
+<text x="40" y="22.5" textLength="76" lengthAdjust="spacingAndGlyphs" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#58a6ff">Back to top</text>
+</svg>

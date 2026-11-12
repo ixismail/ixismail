@@ -5,6 +5,8 @@
   contributions card, redrawn daily by the workflow) and scripts/readme_assets.py (the rest).
 -->
 
+<a id="readme-top"></a>
+
 <p align="center">
   <a href="https://themuhammadismail.com/?utm_source=github&amp;utm_medium=profile&amp;utm_content=portrait">
     <picture>
@@ -53,4 +55,35 @@
     <source media="(prefers-color-scheme: light)" srcset="https://skillicons.dev/icons?i=go,ts,js,php,cpp,bash,html,css,react,nextjs,tailwind,nodejs,nestjs,express,deno,supabase,postgres,mysql,mongodb,redis,docker,githubactions,cloudflare,vercel,linux,git,github&amp;perline=9&amp;theme=light">
     <img src="https://skillicons.dev/icons?i=go,ts,js,php,cpp,bash,html,css,react,nextjs,tailwind,nodejs,nestjs,express,deno,supabase,postgres,mysql,mongodb,redis,docker,githubactions,cloudflare,vercel,linux,git,github&amp;perline=9&amp;theme=dark" alt="Go, TypeScript, JavaScript, PHP, C++, Bash, HTML, CSS, React, Next.js, Tailwind CSS, Node.js, NestJS, Express, Deno, Supabase, PostgreSQL, MySQL, MongoDB, Redis, Docker, GitHub Actions, Cloudflare, Vercel, Linux, Git, GitHub">
   </picture>
+</p>
+
+<br>
+
+<!-- The portfolio's closing call to action, drawn as one image (scripts/readme_assets.py). -->
+<p align="center">
+  <a href="https://themuhammadismail.com/contact?utm_source=github&amp;utm_medium=profile&amp;utm_content=cta">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/cta-dark.svg">
+      <img src="assets/cta-light.svg" width="840" alt="Got an idea worth building? Let's talk it through. Start a conversation: opens the contact page on themuhammadismail.com. I'm taking on freelance projects and open to full-time roles.">
+    </picture>
+  </a>
+</p>
+
+<br>
+
+<!-- The sign-off writes itself in (Pacifico outlines: scripts/lettering.py). -->
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/thanks-dark.svg">
+    <img src="assets/thanks-light.svg" width="420" alt="Thanks For Visiting!">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="#readme-top">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/top-dark.svg">
+      <img src="assets/top-light.svg" width="134" alt="Back to top">
+    </picture>
+  </a>
 </p>
