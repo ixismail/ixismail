@@ -15,8 +15,8 @@ from PIL import Image
 
 GRID = 112           # dots per row and column
 CELL = 4.0           # SVG units per cell -> 448 x 448 viewBox
-REVEAL = 3.6         # seconds for the full top-to-bottom reveal
-FADE = 0.35          # seconds each row takes to fade in
+REVEAL = 1.82        # seconds for the top-to-bottom sweep (2 s with the last row's fade)
+FADE = 0.18          # seconds each row takes to fade in
 MIN_LUM = 0.025      # cells darker than this (pure background) get no dot
 LIFT = 0.68          # gamma < 1 lifts shadows so dark hair still reads
 
