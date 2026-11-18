@@ -9,8 +9,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from profilegen import readme
+from profilegen.blog import Post
 from profilegen.cards import (achievements, activity, clock, contributions, cta, header, hero, name,
-                              notes, portrait, repos, signoff, waves)
+                              notes, portrait, posts, repos, signoff, waves)
 from profilegen.config import ASSETS
 from profilegen.github.model import Profile
 from profilegen.theme import THEMES
@@ -27,6 +28,7 @@ def static_assets() -> Iterator[Asset]:
         yield f"name-{theme}.svg", name.render(t)
         yield f"header-projects-{theme}.svg", header.render("projects", t)
         yield f"header-toolbox-{theme}.svg", header.render("toolbox", t)
+        yield f"header-writing-{theme}.svg", header.render("writing", t)
         yield f"achievements-{theme}.svg", achievements.render(t)
         yield f"notes-{theme}.svg", notes.render(t)
         yield f"hero-{theme}.svg", hero.render(t)
@@ -50,11 +52,14 @@ class Report:
     unchanged: list[str] = field(default_factory=list)
     removed: list[str] = field(default_factory=list)
     readme: bool = False
+    blog: bool = False
 
     def __str__(self) -> str:
         lines = [f"wrote assets/{f}" for f in self.written] + [f"removed assets/{f}" for f in self.removed]
         if self.readme:
             lines.append("updated README.md (pinned repos)")
+        if self.blog:
+            lines.append("updated README.md (blog posts)")
         lines.append(f"{len(self.written)} written, {len(self.unchanged)} unchanged, {len(self.removed)} removed")
         return "\n".join(lines)
 
@@ -80,3 +85,19 @@ def sync_pinned(profile: Profile, report: Report) -> None:
             stale.unlink()
             report.removed.append(stale.name)
     report.readme = readme.update_block("pinned", repos.readme_block(profile.pinned))
+
+
+def post_assets(newest: list[Post]) -> Iterator[Asset]:
+    for theme, t in THEMES.items():
+        for i, post in enumerate(newest, start=1):
+            yield posts.filename(i, theme), posts.render(post, t)
+
+
+def sync_blog(newest: list[Post], report: Report) -> None:
+    """Write the post cards, delete the ones past the newest, and rewrite the README's blog block."""
+    write_assets(post_assets(newest), report)
+    for stale in sorted(ASSETS.glob("post-*-*.svg")):
+        if int(stale.name.split("-")[1]) > len(newest):
+            stale.unlink()
+            report.removed.append(stale.name)
+    report.blog = readme.update_block("blog", posts.readme_block(newest))

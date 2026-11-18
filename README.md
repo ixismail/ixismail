@@ -72,6 +72,10 @@
 </p>
 <!-- pinned:end -->
 
+<!-- Rewritten daily from the blog's RSS feed: the newest posts, with their covers. Empty until there are posts. -->
+<!-- blog:start -->
+<!-- blog:end -->
+
 <h2 align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/header-toolbox-dark.svg">

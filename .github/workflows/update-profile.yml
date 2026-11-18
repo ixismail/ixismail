@@ -1,4 +1,5 @@
-# Redraws the GitHub-driven images daily and commits only if something changed.
+# Redraws the GitHub-driven images and the blog cards (from the site's RSS feed) daily, and
+# commits only if something changed.
 name: Update profile
 
 on:
