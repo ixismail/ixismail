@@ -74,6 +74,43 @@
 
 <!-- Rewritten daily from the blog's RSS feed: the newest posts, with their covers. Empty until there are posts. -->
 <!-- blog:start -->
+<h2 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/header-writing-dark.svg">
+    <img src="assets/header-writing-light.svg" alt="~/writing">
+  </picture>
+</h2>
+<p align="center">
+  <a href="https://themuhammadismail.com/blog/git-version-control-in-1800s?utm_source=github&amp;utm_medium=profile&amp;utm_content=post-1">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/post-1-dark.svg">
+      <img src="assets/post-1-light.svg" width="410" alt="If Git Were Invented in the 1800s, A Century Too Early for Commits: What if Babbage, Lovelace, Tesla, and Edison had commits, branches, and pull requests? This thought experiment explains how Git transforms collaboration and innovation.">
+    </picture>
+  </a>
+  <a href="https://themuhammadismail.com/blog/microservices-explained-using-lego-analogy?utm_source=github&amp;utm_medium=profile&amp;utm_content=post-2">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/post-2-dark.svg">
+      <img src="assets/post-2-light.svg" width="410" alt="I Explained Microservices to a 5-Year-Old Using Lego: Here’s What I Learned: See how microservices differ from monoliths, covering scalability, APIs, and distributed complexity, explained through a simple Lego city analogy.">
+    </picture>
+  </a>
+</p>
+<p align="center">
+  <a href="https://themuhammadismail.com/blog/latency-ux-perceived-performance?utm_source=github&amp;utm_medium=profile&amp;utm_content=post-3">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/post-3-dark.svg">
+      <img src="assets/post-3-light.svg" width="410" alt="Latency as a UX Feature: Designing Software for Perception, Not Just Performance: Users judge software by how fast it feels, not raw server milliseconds. Explore the 100ms rule, skeleton screens, prefetching, and real-world UX patterns.">
+    </picture>
+  </a>
+  <a href="https://themuhammadismail.com/blog/hidden-costs-software-abstractions?utm_source=github&amp;utm_medium=profile&amp;utm_content=post-4">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/post-4-dark.svg">
+      <img src="assets/post-4-light.svg" width="410" alt="The Hidden Costs of Abstractions: When Less Code Isn’t Actually Simpler: Abstractions promise cleaner code, yet often add runtime overhead, cognitive load, leaky layers, and debugging pain. Learn how to weigh trade-offs before abstracting.">
+    </picture>
+  </a>
+</p>
+<p align="center">
+  <a href="https://themuhammadismail.com/blog?utm_source=github&amp;utm_medium=profile&amp;utm_content=all-posts">All posts →</a> · <a href="https://themuhammadismail.com/blog/feed.xml">RSS</a>
+</p>
 <!-- blog:end -->
 
 <h2 align="center">
